@@ -9,6 +9,7 @@ class GameManager:
         print("GameManager initialized")
         self.board = Board()
         self.chess_logic = ChessLogic()
+        self.selected_piece = None
         
         # Spawn all pieces from chess logic data
         self.pieces = []
@@ -16,7 +17,24 @@ class GameManager:
             piece = Piece(
                 piece_data["piece_type"],
                 piece_data["color"],
-                piece_data["board_position"]
+                piece_data["board_position"],
+                self
             )
             self.pieces.append(piece)
+    
+    def select_piece(self, piece):
+        # If clicking the already selected piece, deselect it
+        if self.selected_piece == piece:
+            self.selected_piece.set_selected(False)
+            self.selected_piece = None
+            print(f"Deselected {piece.color} {piece.piece_type}")
+        else:
+            # Deselect previous piece if any
+            if self.selected_piece:
+                self.selected_piece.set_selected(False)
+            
+            # Select new piece
+            self.selected_piece = piece
+            piece.set_selected(True)
+            print(f"Selected {piece.color} {piece.piece_type} at {piece.board_position}")
         self.board = Board()
