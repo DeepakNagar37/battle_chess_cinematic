@@ -34,3 +34,11 @@ class Piece:
             self.entity.position = (self.entity.x, self.base_y + 0.3, self.entity.z)
         else:
             self.entity.position = (self.entity.x, self.base_y, self.entity.z)
+    
+    def move_to(self, new_board_position):
+        self.board_position = new_board_position
+        col, row = new_board_position
+        x = col - 3.5
+        z = row - 3.5
+        self.entity.position = (x, self.base_y, z)
+        print(f"{self.color} {self.piece_type} moved to {new_board_position}")

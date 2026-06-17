@@ -7,7 +7,7 @@ from src.chess_logic import ChessLogic
 class GameManager:
     def __init__(self):
         print("GameManager initialized")
-        self.board = Board()
+        self.board = Board(self)
         self.chess_logic = ChessLogic()
         self.selected_piece = None
         
@@ -37,4 +37,10 @@ class GameManager:
             self.selected_piece = piece
             piece.set_selected(True)
             print(f"Selected {piece.color} {piece.piece_type} at {piece.board_position}")
+    
+    def tile_clicked(self, board_position):
+        if self.selected_piece:
+            self.selected_piece.move_to(board_position)
+            self.selected_piece.set_selected(False)
+            self.selected_piece = None
         self.board = Board()
