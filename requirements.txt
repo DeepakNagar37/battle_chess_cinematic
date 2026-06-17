@@ -1,1 +1,1 @@
-# Python dependencies will be added as needed
+ursina
