@@ -10,11 +10,13 @@ class GameManager:
         self.board = Board()
         self.chess_logic = ChessLogic()
         
-        # Spawn test piece from chess logic data
-        test_data = self.chess_logic.piece_setup[0]
-        self.test_piece = Piece(
-            test_data["piece_type"],
-            test_data["color"],
-            test_data["board_position"]
-        )
+        # Spawn all pieces from chess logic data
+        self.pieces = []
+        for piece_data in self.chess_logic.piece_setup:
+            piece = Piece(
+                piece_data["piece_type"],
+                piece_data["color"],
+                piece_data["board_position"]
+            )
+            self.pieces.append(piece)
         self.board = Board()
