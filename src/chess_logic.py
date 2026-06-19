@@ -46,8 +46,17 @@ class ChessLogic:
     def is_legal_move(self, piece, target_position, game_manager):
         if piece.piece_type == "pawn":
             return self._is_legal_pawn_move(piece, target_position, game_manager)
-        # Other pieces have no rules yet, allow any move
-        return True
+        elif piece.piece_type == "knight":
+            return self._is_legal_knight_move(piece, target_position, game_manager)
+        elif piece.piece_type == "bishop":
+            return self._is_legal_bishop_move(piece, target_position, game_manager)
+        elif piece.piece_type == "rook":
+            return self._is_legal_rook_move(piece, target_position, game_manager)
+        elif piece.piece_type == "queen":
+            return self._is_legal_queen_move(piece, target_position, game_manager)
+        elif piece.piece_type == "king":
+            return self._is_legal_king_move(piece, target_position, game_manager)
+        return False
     
     def _is_legal_pawn_move(self, piece, target_position, game_manager):
         col, row = piece.board_position
@@ -76,3 +85,90 @@ class ChessLogic:
             return target_piece is not None and target_piece.color != piece.color
         
         return False
+
+    def _is_legal_knight_move(self, piece, target_position, game_manager):
+        col, row = piece.board_position
+        target_col, target_row = target_position
+        
+        col_diff = abs(target_col - col)
+        row_diff = abs(target_row - row)
+        
+        # Knight moves in L-shape: 2 in one direction, 1 in the other
+        if not ((col_diff == 2 and row_diff == 1) or (col_diff == 1 and row_diff == 2)):
+            return False
+        
+        target_piece = game_manager.get_piece_at(target_position)
+        return target_piece is None or target_piece.color != piece.color
+    
+    def _is_legal_bishop_move(self, piece, target_position, game_manager):
+        col, row = piece.board_position
+        target_col, target_row = target_position
+        
+        col_diff = abs(target_col - col)
+        row_diff = abs(target_row - row)
+        
+        # Bishop moves diagonally
+        if col_diff != row_diff or col_diff == 0:
+            return False
+        
+        # Check path is clear
+        if not self._is_path_clear(piece.board_position, target_position, game_manager):
+            return False
+        
+        target_piece = game_manager.get_piece_at(target_position)
+        return target_piece is None or target_piece.color != piece.color
+    
+    def _is_legal_rook_move(self, piece, target_position, game_manager):
+        col, row = piece.board_position
+        target_col, target_row = target_position
+        
+        # Rook moves horizontally or vertically
+        if col != target_col and row != target_row:
+            return False
+        
+        # Check path is clear
+        if not self._is_path_clear(piece.board_position, target_position, game_manager):
+            return False
+        
+        target_piece = game_manager.get_piece_at(target_position)
+        return target_piece is None or target_piece.color != piece.color
+    
+    def _is_legal_queen_move(self, piece, target_position, game_manager):
+        # Queen moves like rook or bishop
+        return (self._is_legal_rook_move(piece, target_position, game_manager) or 
+                self._is_legal_bishop_move(piece, target_position, game_manager))
+    
+    def _is_legal_king_move(self, piece, target_position, game_manager):
+        col, row = piece.board_position
+        target_col, target_row = target_position
+        
+        col_diff = abs(target_col - col)
+        row_diff = abs(target_row - row)
+        
+        # King moves one square in any direction
+        if col_diff > 1 or row_diff > 1:
+            return False
+        
+        if col_diff == 0 and row_diff == 0:
+            return False
+        
+        target_piece = game_manager.get_piece_at(target_position)
+        return target_piece is None or target_piece.color != piece.color
+    
+    def _is_path_clear(self, start_position, end_position, game_manager):
+        col, row = start_position
+        target_col, target_row = end_position
+        
+        col_step = 0 if col == target_col else (1 if target_col > col else -1)
+        row_step = 0 if row == target_row else (1 if target_row > row else -1)
+        
+        current_col = col + col_step
+        current_row = row + row_step
+        
+        while (current_col, current_row) != (target_col, target_row):
+            if game_manager.get_piece_at((current_col, current_row)) is not None:
+                return False
+            current_col += col_step
+            current_row += row_step
+        
+        return True
