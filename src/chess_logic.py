@@ -258,3 +258,21 @@ class ChessLogic:
         
         # No safe moves available and king is in check = checkmate
         return True
+
+    def is_stalemated(self, color, game_manager):
+        # A color is stalemated if:
+        # 1. King is NOT in check
+        # 2. No legal safe moves available
+        
+        if self.is_king_in_check(color, game_manager):
+            return False
+        
+        # Check if any piece of this color has a safe legal move
+        for piece in game_manager.pieces:
+            if piece.color == color:
+                safe_moves = self.get_safe_legal_moves(piece, game_manager)
+                if safe_moves:
+                    return False
+        
+        # No safe moves available and king is not in check = stalemate
+        return True

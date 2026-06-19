@@ -69,3 +69,9 @@ class UIManager:
         self.checkmate_message.text = f"Checkmate! {winner} wins!"
         self.checkmate_message.color = color.yellow
         print(f"Checkmate! {winner} wins!")
+
+    def show_stalemate(self):
+        # Display stalemate draw message
+        self.checkmate_message.text = "Stalemate! Draw"
+        self.checkmate_message.color = color.cyan
+        print("Stalemate! Draw!")

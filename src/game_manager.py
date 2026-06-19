@@ -130,3 +130,10 @@ class GameManager:
             self.game_over = True
             self.ui_manager.show_checkmate(winner)
             print(f"Checkmate! {winner} wins!")
+            return
+        
+        # Check for stalemate
+        if self.chess_logic.is_stalemated(self.chess_logic.current_turn, self):
+            self.game_over = True
+            self.ui_manager.show_stalemate()
+            print("Stalemate! Draw!")
