@@ -2,6 +2,7 @@ from src.board import Board
 from src.pieces import Piece
 from src.chess_logic import ChessLogic
 from src.environment import BattlefieldEnvironment
+from src.ui_manager import UIManager
 
 class GameManager:
     def __init__(self):
@@ -9,6 +10,7 @@ class GameManager:
         self.environment = BattlefieldEnvironment()
         self.board = Board(self)
         self.chess_logic = ChessLogic()
+        self.ui_manager = UIManager()
         self.selected_piece = None
         
         # Spawn all pieces from chess logic data
@@ -21,6 +23,9 @@ class GameManager:
                 self
             )
             self.pieces.append(piece)
+        
+        # Initialize UI with current turn
+        self.ui_manager.update_turn_label(self.chess_logic.current_turn)
     
     def get_piece_at(self, board_position):
         for piece in self.pieces:
@@ -84,6 +89,7 @@ class GameManager:
                 attacker.move_to(board_position)
                 self.board.clear_highlights()
                 self.chess_logic.switch_turn()
+                self.ui_manager.update_turn_label(self.chess_logic.current_turn)
             
             attacker.play_capture_animation(target_piece, finish_capture)
         else:
@@ -93,3 +99,4 @@ class GameManager:
             self.selected_piece = None
             self.board.clear_highlights()
             self.chess_logic.switch_turn()
+            self.ui_manager.update_turn_label(self.chess_logic.current_turn)
