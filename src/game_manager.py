@@ -32,6 +32,9 @@ class GameManager:
             print(f"Cannot select {piece.color} piece - it's {self.chess_logic.current_turn}'s turn")
             return
         
+        # Clear previous highlights
+        self.board.clear_highlights()
+        
         # If clicking the already selected piece, deselect it
         if self.selected_piece == piece:
             self.selected_piece.set_selected(False)
@@ -46,6 +49,10 @@ class GameManager:
             self.selected_piece = piece
             piece.set_selected(True)
             print(f"Selected {piece.color} {piece.piece_type} at {piece.board_position}")
+            
+            # Highlight legal moves
+            legal_moves = self.chess_logic.get_legal_moves(piece, self)
+            self.board.highlight_tiles(legal_moves)
     
     def tile_clicked(self, board_position):
         if not self.selected_piece:
@@ -74,4 +81,8 @@ class GameManager:
         self.selected_piece.move_to(board_position)
         self.selected_piece.set_selected(False)
         self.selected_piece = None
+        
+        # Clear highlights after move
+        self.board.clear_highlights()
+        
         self.chess_logic.switch_turn()

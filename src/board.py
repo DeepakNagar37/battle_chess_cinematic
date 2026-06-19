@@ -19,8 +19,25 @@ class Board:
                     collider='box'
                 )
                 tile.board_position = (col, row)
+                tile.original_color = tile_color
                 tile.board = self
                 self.tiles.append(tile)
+    
+    def get_tile_at(self, board_position):
+        for tile in self.tiles:
+            if tile.board_position == board_position:
+                return tile
+        return None
+    
+    def highlight_tiles(self, positions):
+        for position in positions:
+            tile = self.get_tile_at(position)
+            if tile:
+                tile.color = color.green
+    
+    def clear_highlights(self):
+        for tile in self.tiles:
+            tile.color = tile.original_color
     
     def on_click(self, tile):
         self.game_manager.tile_clicked(tile.board_position)

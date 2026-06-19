@@ -172,3 +172,13 @@ class ChessLogic:
             current_row += row_step
         
         return True
+
+    def get_legal_moves(self, piece, game_manager):
+        legal_moves = []
+        for row in range(8):
+            for col in range(8):
+                target_position = (col, row)
+                if target_position != piece.board_position:
+                    if self.is_legal_move(piece, target_position, game_manager):
+                        legal_moves.append(target_position)
+        return legal_moves
