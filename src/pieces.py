@@ -1,5 +1,47 @@
 from ursina import Entity, color, invoke, destroy
 
+# Piece Visual Configuration
+# Future 3D models can be loaded by replacing 'model' values:
+# Example: 'model': 'assets/models/pawn_soldier.glb'
+PIECE_VISUAL_CONFIG = {
+    "pawn": {
+        "model": "sphere",
+        "scale": 0.4,
+        "height_offset": 0.4,
+        # Future: "model": "assets/models/pawn_soldier.glb"
+    },
+    "knight": {
+        "model": "cube",
+        "scale": 0.5,
+        "height_offset": 0.5,
+        # Future: "model": "assets/models/knight_cavalry.glb"
+    },
+    "bishop": {
+        "model": "cylinder",
+        "scale": (0.3, 0.6, 0.3),
+        "height_offset": 0.6,
+        # Future: "model": "assets/models/bishop_assassin_monk.glb"
+    },
+    "rook": {
+        "model": "cube",
+        "scale": 0.6,
+        "height_offset": 0.5,
+        # Future: "model": "assets/models/rook_war_elephant.glb"
+    },
+    "queen": {
+        "model": "cylinder",
+        "scale": (0.4, 0.7, 0.4),
+        "height_offset": 0.7,
+        # Future: "model": "assets/models/queen_royal_assassin.glb"
+    },
+    "king": {
+        "model": "cube",
+        "scale": 0.7,
+        "height_offset": 0.6,
+        # Future: "model": "assets/models/king_old_warrior.glb"
+    }
+}
+
 class Piece:
     def __init__(self, piece_type, color_name, board_position, game_manager):
         self.piece_type = piece_type
@@ -10,21 +52,29 @@ class Piece:
         self.is_animating = False
         print(f"{color_name} {piece_type} created at {board_position}")
         
+        # Get visual configuration for this piece type
+        visual_config = PIECE_VISUAL_CONFIG.get(piece_type, {
+            "model": "sphere",
+            "scale": 0.5,
+            "height_offset": 0.5
+        })
+        
         # Convert board position (row, col) to world position
         col, row = board_position
         x = col - 3.5
         z = row - 3.5
         
+        self.base_y = visual_config["height_offset"]
         piece_color = color.white if color_name == "white" else color.black
+        
         self.entity = Entity(
-            model='sphere',
+            model=visual_config["model"],
             color=piece_color,
-            position=(x, 0.5, z),
-            scale=0.5,
-            collider='sphere'
+            position=(x, self.base_y, z),
+            scale=visual_config["scale"],
+            collider='box'
         )
         self.entity.piece = self
-        self.base_y = 0.5
     
     def on_click(self):
         if not self.is_animating:
