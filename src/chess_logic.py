@@ -182,3 +182,28 @@ class ChessLogic:
                     if self.is_legal_move(piece, target_position, game_manager):
                         legal_moves.append(target_position)
         return legal_moves
+
+    def find_king(self, color, game_manager):
+        # Find the king of the specified color
+        for piece in game_manager.pieces:
+            if piece.piece_type == "king" and piece.color == color:
+                return piece
+        return None
+    
+    def is_king_in_check(self, color, game_manager):
+        # Find the king
+        king = self.find_king(color, game_manager)
+        if not king:
+            return False
+        
+        king_position = king.board_position
+        
+        # Check if any enemy piece can attack the king position
+        for piece in game_manager.pieces:
+            if piece.color != color:
+                # Check if this enemy piece can legally move to king's position
+                if self.is_legal_move(piece, king_position, game_manager):
+                    print(f"{color} king in check from {piece.color} {piece.piece_type} at {piece.board_position}")
+                    return True
+        
+        return False

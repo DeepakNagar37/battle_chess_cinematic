@@ -90,6 +90,7 @@ class GameManager:
                 self.board.clear_highlights()
                 self.chess_logic.switch_turn()
                 self.ui_manager.update_turn_label(self.chess_logic.current_turn)
+                self._check_for_check()
             
             attacker.play_capture_animation(target_piece, finish_capture)
         else:
@@ -100,3 +101,10 @@ class GameManager:
             self.board.clear_highlights()
             self.chess_logic.switch_turn()
             self.ui_manager.update_turn_label(self.chess_logic.current_turn)
+            self._check_for_check()
+    
+    def _check_for_check(self):
+        # Check if either king is in check
+        white_in_check = self.chess_logic.is_king_in_check("white", self)
+        black_in_check = self.chess_logic.is_king_in_check("black", self)
+        self.ui_manager.update_check_warning(white_in_check, black_in_check)

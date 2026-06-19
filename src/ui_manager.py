@@ -4,6 +4,7 @@ class UIManager:
     def __init__(self):
         print("UIManager initialized")
         self._setup_turn_label()
+        self._setup_check_warning()
     
     def _setup_turn_label(self):
         # Current turn label at top of screen
@@ -16,6 +17,17 @@ class UIManager:
         )
         print("Turn label created")
     
+    def _setup_check_warning(self):
+        # Check warning label
+        self.check_warning = Text(
+            text="",
+            position=(-0.85, 0.35),
+            scale=2,
+            color=color.red,
+            background=True
+        )
+        print("Check warning created")
+    
     def update_turn_label(self, current_turn):
         # Update label based on current turn
         if current_turn == "white":
@@ -25,3 +37,17 @@ class UIManager:
             self.turn_label.text = "Black Turn"
             self.turn_label.color = color.black
         print(f"Turn label updated: {self.turn_label.text}")
+    
+    def update_check_warning(self, white_in_check, black_in_check):
+        # Update check warning based on check status
+        if white_in_check:
+            self.check_warning.text = "White King in Check!"
+            self.check_warning.color = color.red
+            print("Check warning: White King in Check")
+        elif black_in_check:
+            self.check_warning.text = "Black King in Check!"
+            self.check_warning.color = color.red
+            print("Check warning: Black King in Check")
+        else:
+            self.check_warning.text = ""
+            print("Check warning cleared")
