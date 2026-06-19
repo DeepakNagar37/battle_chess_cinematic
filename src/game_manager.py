@@ -51,6 +51,11 @@ class GameManager:
         if not self.selected_piece:
             return
         
+        # Check if move is legal
+        if not self.chess_logic.is_legal_move(self.selected_piece, board_position, self):
+            print(f"Illegal move for {self.selected_piece.color} {self.selected_piece.piece_type}")
+            return
+        
         # Check if there's a piece at the target position
         target_piece = self.get_piece_at(board_position)
         
