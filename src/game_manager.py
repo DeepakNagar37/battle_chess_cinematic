@@ -12,6 +12,7 @@ class GameManager:
         self.chess_logic = ChessLogic()
         self.ui_manager = UIManager()
         self.selected_piece = None
+        self.game_over = False
         
         # Spawn all pieces from chess logic data
         self.pieces = []
@@ -34,6 +35,11 @@ class GameManager:
         return None
     
     def select_piece(self, piece):
+        # Do not allow selection if game is over
+        if self.game_over:
+            print("Game is over - no more moves allowed")
+            return
+        
         # Only allow selecting pieces of the current player's color
         if piece.color != self.chess_logic.current_turn:
             print(f"Cannot select {piece.color} piece - it's {self.chess_logic.current_turn}'s turn")
@@ -62,6 +68,10 @@ class GameManager:
             self.board.highlight_tiles(legal_moves)
     
     def tile_clicked(self, board_position):
+        # Do not allow moves if game is over
+        if self.game_over:
+            return
+        
         if not self.selected_piece:
             return
         
@@ -113,3 +123,10 @@ class GameManager:
         white_in_check = self.chess_logic.is_king_in_check("white", self)
         black_in_check = self.chess_logic.is_king_in_check("black", self)
         self.ui_manager.update_check_warning(white_in_check, black_in_check)
+        
+        # Check for checkmate
+        if self.chess_logic.is_checkmated(self.chess_logic.current_turn, self):
+            winner = "White" if self.chess_logic.current_turn == "black" else "Black"
+            self.game_over = True
+            self.ui_manager.show_checkmate(winner)
+            print(f"Checkmate! {winner} wins!")

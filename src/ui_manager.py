@@ -5,6 +5,7 @@ class UIManager:
         print("UIManager initialized")
         self._setup_turn_label()
         self._setup_check_warning()
+        self._setup_checkmate_message()
     
     def _setup_turn_label(self):
         # Current turn label at top of screen
@@ -51,3 +52,20 @@ class UIManager:
         else:
             self.check_warning.text = ""
             print("Check warning cleared")
+
+    def _setup_checkmate_message(self):
+        # Checkmate game-over message
+        self.checkmate_message = Text(
+            text="",
+            position=(0, 0),
+            scale=4,
+            color=color.yellow,
+            background=True
+        )
+        print("Checkmate message created")
+    
+    def show_checkmate(self, winner):
+        # Display checkmate message with winner
+        self.checkmate_message.text = f"Checkmate! {winner} wins!"
+        self.checkmate_message.color = color.yellow
+        print(f"Checkmate! {winner} wins!")
