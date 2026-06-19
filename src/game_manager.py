@@ -1,10 +1,12 @@
 from src.board import Board
 from src.pieces import Piece
 from src.chess_logic import ChessLogic
+from src.environment import BattlefieldEnvironment
 
 class GameManager:
     def __init__(self):
         print("GameManager initialized")
+        self.environment = BattlefieldEnvironment()
         self.board = Board(self)
         self.chess_logic = ChessLogic()
         self.selected_piece = None
