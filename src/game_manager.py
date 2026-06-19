@@ -72,17 +72,22 @@ class GameManager:
                 print(f"Cannot move onto friendly {target_piece.piece_type}")
                 return
             
-            # Capture enemy piece
-            print(f"Capturing {target_piece.color} {target_piece.piece_type}")
-            target_piece.remove()
-            self.pieces.remove(target_piece)
-        
-        # Move the selected piece
-        self.selected_piece.move_to(board_position)
-        self.selected_piece.set_selected(False)
-        self.selected_piece = None
-        
-        # Clear highlights after move
-        self.board.clear_highlights()
-        
-        self.chess_logic.switch_turn()
+            # Capture with animation
+            attacker = self.selected_piece
+            self.selected_piece.set_selected(False)
+            self.selected_piece = None
+            
+            def finish_capture():
+                self.pieces.remove(target_piece)
+                attacker.move_to(board_position)
+                self.board.clear_highlights()
+                self.chess_logic.switch_turn()
+            
+            attacker.play_capture_animation(target_piece, finish_capture)
+        else:
+            # Normal move
+            self.selected_piece.move_to(board_position)
+            self.selected_piece.set_selected(False)
+            self.selected_piece = None
+            self.board.clear_highlights()
+            self.chess_logic.switch_turn()

@@ -1,4 +1,4 @@
-from ursina import Entity, color
+from ursina import Entity, color, invoke, destroy
 
 class Piece:
     def __init__(self, piece_type, color_name, board_position, game_manager):
@@ -7,6 +7,7 @@ class Piece:
         self.board_position = board_position
         self.game_manager = game_manager
         self.selected = False
+        self.is_animating = False
         print(f"{color_name} {piece_type} created at {board_position}")
         
         # Convert board position (row, col) to world position
@@ -26,7 +27,8 @@ class Piece:
         self.base_y = 0.5
     
     def on_click(self):
-        self.game_manager.select_piece(self)
+        if not self.is_animating:
+            self.game_manager.select_piece(self)
     
     def set_selected(self, is_selected):
         self.selected = is_selected
@@ -43,7 +45,26 @@ class Piece:
         self.entity.position = (x, self.base_y, z)
         print(f"{self.color} {self.piece_type} moved to {new_board_position}")
     
+    def play_capture_animation(self, target_piece, callback):
+        self.is_animating = True
+        print(f"{self.color} {self.piece_type} attacking {target_piece.color} {target_piece.piece_type}")
+        
+        # Quick scale pulse animation
+        original_scale = self.entity.scale
+        self.entity.animate_scale(original_scale * 1.3, duration=0.15)
+        
+        # After pulse, return to normal and remove target
+        def finish_capture():
+            self.entity.animate_scale(original_scale, duration=0.1)
+            target_piece.remove()
+            self.is_animating = False
+            callback()
+        
+        invoke(finish_capture, delay=0.15)
+    
     def remove(self):
         print(f"{self.color} {self.piece_type} captured")
-        self.entity.disable()
-        self.entity = None
+        if self.entity:
+            self.entity.animate_scale(0, duration=0.2)
+            invoke(lambda: destroy(self.entity), delay=0.2)
+            self.entity = None
