@@ -42,3 +42,8 @@ class Piece:
         z = row - 3.5
         self.entity.position = (x, self.base_y, z)
         print(f"{self.color} {self.piece_type} moved to {new_board_position}")
+    
+    def remove(self):
+        print(f"{self.color} {self.piece_type} captured")
+        self.entity.disable()
+        self.entity = None
