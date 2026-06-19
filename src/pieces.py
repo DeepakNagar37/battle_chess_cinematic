@@ -49,18 +49,59 @@ class Piece:
         self.is_animating = True
         print(f"{self.color} {self.piece_type} attacking {target_piece.color} {target_piece.piece_type}")
         
-        # Quick scale pulse animation
+        # Get target position
+        target_col, target_row = target_piece.board_position
+        target_x = target_col - 3.5
+        target_z = target_row - 3.5
+        
+        original_pos = (self.entity.x, self.entity.y, self.entity.z)
         original_scale = self.entity.scale
-        self.entity.animate_scale(original_scale * 1.3, duration=0.15)
         
-        # After pulse, return to normal and remove target
-        def finish_capture():
-            self.entity.animate_scale(original_scale, duration=0.1)
-            target_piece.remove()
-            self.is_animating = False
-            callback()
+        if self.piece_type == "pawn":
+            # Short forward lunge
+            self.entity.animate_position((target_x, self.base_y + 0.3, target_z), duration=0.2)
+            invoke(lambda: self._finish_animation(target_piece, callback, original_scale), delay=0.2)
         
-        invoke(finish_capture, delay=0.15)
+        elif self.piece_type == "knight":
+            # Quick charge with hop
+            mid_x = (self.entity.x + target_x) / 2
+            mid_z = (self.entity.z + target_z) / 2
+            self.entity.animate_position((mid_x, self.base_y + 1, mid_z), duration=0.15)
+            invoke(lambda: self.entity.animate_position((target_x, self.base_y, target_z), duration=0.1), delay=0.15)
+            invoke(lambda: self._finish_animation(target_piece, callback, original_scale), delay=0.25)
+        
+        elif self.piece_type == "bishop":
+            # Diagonal strike movement
+            self.entity.animate_position((target_x, self.base_y + 0.5, target_z), duration=0.15)
+            self.entity.animate_rotation((0, 360, 0), duration=0.15)
+            invoke(lambda: self._finish_animation(target_piece, callback, original_scale), delay=0.15)
+        
+        elif self.piece_type == "rook":
+            # Heavy smash with scale pulse
+            self.entity.animate_scale(original_scale * 1.5, duration=0.1)
+            invoke(lambda: self.entity.animate_scale(original_scale, duration=0.1), delay=0.1)
+            invoke(lambda: self.entity.animate_position((target_x, self.base_y, target_z), duration=0.1), delay=0.1)
+            invoke(lambda: self._finish_animation(target_piece, callback, original_scale), delay=0.2)
+        
+        elif self.piece_type == "queen":
+            # Fast sharp strike
+            self.entity.animate_position((target_x, self.base_y + 0.4, target_z), duration=0.12)
+            self.entity.animate_scale(original_scale * 1.2, duration=0.12)
+            invoke(lambda: self.entity.animate_scale(original_scale, duration=0.08), delay=0.12)
+            invoke(lambda: self._finish_animation(target_piece, callback, original_scale), delay=0.2)
+        
+        elif self.piece_type == "king":
+            # Slow powerful strike
+            self.entity.animate_scale(original_scale * 1.4, duration=0.2)
+            self.entity.animate_position((target_x, self.base_y + 0.2, target_z), duration=0.25)
+            invoke(lambda: self.entity.animate_scale(original_scale, duration=0.15), delay=0.2)
+            invoke(lambda: self._finish_animation(target_piece, callback, original_scale), delay=0.35)
+    
+    def _finish_animation(self, target_piece, callback, original_scale):
+        self.entity.scale = original_scale
+        target_piece.remove()
+        self.is_animating = False
+        callback()
     
     def remove(self):
         print(f"{self.color} {self.piece_type} captured")
