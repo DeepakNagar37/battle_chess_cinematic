@@ -57,17 +57,22 @@ class GameManager:
             piece.set_selected(True)
             print(f"Selected {piece.color} {piece.piece_type} at {piece.board_position}")
             
-            # Highlight legal moves
-            legal_moves = self.chess_logic.get_legal_moves(piece, self)
+            # Highlight legal moves that don't leave king in check
+            legal_moves = self.chess_logic.get_safe_legal_moves(piece, self)
             self.board.highlight_tiles(legal_moves)
     
     def tile_clicked(self, board_position):
         if not self.selected_piece:
             return
         
-        # Check if move is legal
+        # Check if move is legal and safe
         if not self.chess_logic.is_legal_move(self.selected_piece, board_position, self):
             print(f"Illegal move for {self.selected_piece.color} {self.selected_piece.piece_type}")
+            return
+        
+        # Check if move would leave king in check
+        if self.chess_logic.would_move_cause_check(self.selected_piece, board_position, self):
+            print(f"Cannot move - would leave {self.selected_piece.color} king in check")
             return
         
         # Check if there's a piece at the target position

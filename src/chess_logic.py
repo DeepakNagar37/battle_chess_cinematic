@@ -207,3 +207,36 @@ class ChessLogic:
                     return True
         
         return False
+
+    def would_move_cause_check(self, piece, target_position, game_manager):
+        # Simulate the move and check if it leaves the player's king in check
+        original_position = piece.board_position
+        target_piece = game_manager.get_piece_at(target_position)
+        
+        # Temporarily make the move
+        piece.board_position = target_position
+        if target_piece:
+            game_manager.pieces.remove(target_piece)
+        
+        # Check if king is in check after this move
+        in_check = self.is_king_in_check(piece.color, game_manager)
+        
+        # Undo the move
+        piece.board_position = original_position
+        if target_piece:
+            game_manager.pieces.append(target_piece)
+        
+        return in_check
+    
+    def get_safe_legal_moves(self, piece, game_manager):
+        # Get all legal moves that don't leave own king in check
+        legal_moves = []
+        for row in range(8):
+            for col in range(8):
+                target_position = (col, row)
+                if target_position != piece.board_position:
+                    if self.is_legal_move(piece, target_position, game_manager):
+                        # Check if this move would leave king in check
+                        if not self.would_move_cause_check(piece, target_position, game_manager):
+                            legal_moves.append(target_position)
+        return legal_moves
